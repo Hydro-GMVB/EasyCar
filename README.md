@@ -10,13 +10,13 @@
 
 
 
-##O projeto
+## O projeto
 
 O EasyCar se trata de um sistema integrado em prol de uma maior simplicidade no que se trata da inserção e requisição de informações referentes a carros.
 Sendo assim, este facilita o trabalho de um dev ao criar uma plataforma voltada para carros, pois o presente aqui servirá como um sistema integrado como template.
 
 
-##Funcionalidades
+## Funcionalidades
 
 * Framework Python (Flask)
 * Banco de dados (SQLite)
