@@ -18,14 +18,14 @@
 # json → Conjunto de métodos utilizados para o JSON
 from flask import Flask, render_template, jsonify, request, json
 
-# Valores padrão para variáveis globais que serão utilizadas no projeto
-carros = list()
-id_carros = 0
+# db → Funções do arquivo "db.py"
+# sqlite3 → Conjunto de funções do sqlite
+import db, sqlite3
 
 # Inicializando o app do Flask com o diretorio para possivel html (escalabilidade)
 app = Flask(__name__, template_folder="templates")
 
-# Método GET padrão (estilo "hello world!")
+#! Método GET padrão (estilo "hello world!")
 @app.route("/")
 def hello_world():
 
@@ -33,21 +33,19 @@ def hello_world():
     message = "Hello, Flask + Jinja 🐍"
     return render_template("index.html", message=message)
 
-# Método POST para enviar informações sobre os veículos
+#! Método POST
 @app.route("/cadastro", methods=["POST"])
 def cadastro():
 
-    #! Variáveis globais
-    # Estas variáveis serão lidas pelo escopo do código em geral
-    # id_carros → permite que o ID seja atualizado
-    # carros → permite que a lista com dicionários seja atualizada
-    global id_carros
-    global carros
-    
+    # Esta função permite que o valor id_carros consiga
+    # ser incrementado à medida que um valor é inserido no
+    # banco de dados
+    id_carros = db.getLastID()
+
     #! JSON
     # Cada veículo terá como chave o seu ID (autoincrementado automaticamente)
     # E as informações mais notáveis do veículo também serão inseridas nesta etapa
-    informacoes = {
+    informacoes = [{
         id_carros: {
             "modelo": request.json["modelo"],
             "quilometragem": request.json["quilometragem"],
@@ -56,34 +54,30 @@ def cadastro():
             "condicao": request.json["condicao"],
             "preco": request.json["preco"]
         }
-    }
-
-    # Autoincrementando o ID de cada veículo
-    id_carros += 1
-
-    #! Concatenando cada veículo numa lista
-    # Em Python, o JSON será lido se a sua variável for do tipo list
-    # Logo, será uma lista com um conjunto de dicionários (depois interpretados como JSON)
-    # Este método permite que o JSON da aplicação acumule as entradas adicionadas
-    carros.append(informacoes)
-
-    # Salvando os JSON enviados num arquivo chamado "info.json"
-    # Este arquivo permite que as informações do banco de dados sejam adicionadas no sqlite
-    with open("carros.json", "w") as json_file:
-        json.dump(carros, json_file)
-        
-    # Retorno do POST enviado (o que vai aparecer no POSTMAN)
-    return(jsonify(carros))
+    }]
+    db.jsonToDB(informacoes)
+    
+    return(jsonify(informacoes))
 
 #! SEGUNDO MÉTODO GET
-@app.route("/info", methods=["POST", "GET"])
+@app.route("/info")
 def info():
-    id_pesquisa = request.form.get("id_pesquisa")
-    id_pesquisa = "OKOIK"
-    return "OJK"
+    # É preciso abrir uma conexão neste arquivo. Se não houver,
+    # o sqlite retornará um erro de threads
+    conn = sqlite3.connect("db/carros.db")
+    c = conn.cursor()
+
+    # Esta atribuição permite que a variável data consiga
+    # armazenar todos os valores da tabela carros
+    data = c.execute("""
+    SELECT * FROM carros;
+    """).fetchall()
+    
+    # O que retorna é um json do banco de dados
+    return jsonify(data)
 
 #! Comando para fazer o flask rodar
 # A opção debug faz com que o server seja atualizado a cada
 # modificação
 if __name__ == "__main__":
-    app.run(debug = True, port = 5000)
+    app.run(debug=True, port=5000)
