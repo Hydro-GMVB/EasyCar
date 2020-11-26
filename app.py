@@ -13,17 +13,18 @@
 #! Importando dependências
 # Flask → Permite que a aplicação flask rode
 # render_template → Permite o uso do JINJA no html
-# jsonify → Converte uma string em JSON. Será o retorno do POST
 # request → Permite que o usuário insira os valores do JSON do método POST
 # json → Conjunto de métodos utilizados para o JSON
-from flask import Flask, render_template, jsonify, request, json
+from flask import Flask, render_template, request, json
 
 # db → Funções do arquivo "db.py"
 # sqlite3 → Conjunto de funções do sqlite
-import db, sqlite3
+import db
+import sqlite3
 
 # Inicializando o app do Flask com o diretorio para possivel html (escalabilidade)
 app = Flask(__name__, template_folder="templates")
+db.defaultTable()
 
 #! Método GET padrão (estilo "hello world!")
 @app.route("/")
@@ -36,11 +37,13 @@ def hello_world():
 #! Método POST
 @app.route("/cadastro", methods=["POST"])
 def cadastro():
-
-    # Esta função permite que o valor id_carros consiga
-    # ser incrementado à medida que um valor é inserido no
-    # banco de dados
-    id_carros = db.getLastID()
+    
+    # Esta função permite que o valor id_carros consiga ser incrementado à medida que um
+    #  valor é inserido no banco de dados. Se um valor não existir, 1 é o padrão.
+    try:
+        id_carros = db.getLastID()
+    except:
+        id_carros = 1
 
     #! JSON
     # Cada veículo terá como chave o seu ID (autoincrementado automaticamente)
@@ -55,9 +58,10 @@ def cadastro():
             "preco": request.json["preco"]
         }
     }]
+
     db.jsonToDB(informacoes)
     
-    return(jsonify(informacoes))
+    return(json.dumps(informacoes))
 
 #! SEGUNDO MÉTODO GET
 @app.route("/info")
@@ -74,7 +78,7 @@ def info():
     """).fetchall()
     
     # O que retorna é um json do banco de dados
-    return jsonify(data)
+    return json.dumps(data)
 
 #! Comando para fazer o flask rodar
 # A opção debug faz com que o server seja atualizado a cada

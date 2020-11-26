@@ -27,8 +27,6 @@ def defaultTable():
 def defaultValues():
     conn = sqlite3.connect("db/carros.db")
     c = conn.cursor()
-    conn = sqlite3.connect("db/carros.db")
-    c = conn.cursor()
     c.execute('''
     INSERT INTO carros(modelo, quilometragem, ano, placa, condicao, preco) VALUES(
         "Corsa", 128000, 2009, "XFG8433", "Ótimo estado", 20000
@@ -46,7 +44,7 @@ def jsonToDB(data):
     # Estrutura que permite a inserção de valores do JSON na tabela
     # Os 2 loops permitem que o JSON seja interpretado como um dict
     for id_carros in data:
-        for info in id_carros.values():
+        for data in id_carros.values():
 
             #! Adição dos valores
             # Esta linha de código permite que os valores de cada chave
@@ -55,15 +53,15 @@ def jsonToDB(data):
             INSERT INTO carros(modelo, quilometragem, ano, placa, condicao, preco) VALUES(
                 ?, ?, ?, ?, ?, ?
             );''', (
-                info["modelo"],
-                info["quilometragem"],
-                info["ano"],
-                info["placa"],
-                info["condicao"],
-                info["preco"]
+                data["modelo"],
+                data["quilometragem"],
+                data["ano"],
+                data["placa"],
+                data["condicao"],
+                data["preco"]
             )
             )
-
+            
             conn.commit()
 
 def getLastID():
@@ -71,9 +69,9 @@ def getLastID():
     c = conn.cursor()
 
     # Variável last_id receberá o valor do último ID
-    last_id = c.execute("""
+    last_id = c.execute('''
     SELECT id FROM carros ORDER BY id DESC LIMIT 1;
-    """).fetchone()
+    ''').fetchone()
     
     # Por padrão, fetchone() retorna uma tupla, a linha abaixo
     # irá retornar o valor dentro da tupla
