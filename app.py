@@ -68,7 +68,7 @@ def cadastro():
 def info():
     # É preciso abrir uma conexão neste arquivo. Se não houver,
     # o sqlite retornará um erro de threads
-    conn = sqlite3.connect("db/carros.db")
+    conn = sqlite3.connect("carros.db")
     c = conn.cursor()
 
     # Esta atribuição permite que a variável data consiga

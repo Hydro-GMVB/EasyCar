@@ -4,7 +4,7 @@ import sqlite3
 # Esta função irá criar uma tabela padrão para o banco de dados
 # Ela terá um ID autoincrementado automaticamente
 def defaultTable():
-    conn = sqlite3.connect("db/carros.db")
+    conn = sqlite3.connect("carros.db")
     c = conn.cursor()
     c.execute('''
     CREATE TABLE IF NOT EXISTS carros(
@@ -25,7 +25,7 @@ def defaultTable():
 # Esta função irá popular a tabela "estacionamento" com placeholders
 # Seu único propósito é servir de base para outras funções
 def defaultValues():
-    conn = sqlite3.connect("db/carros.db")
+    conn = sqlite3.connect("carros.db")
     c = conn.cursor()
     c.execute('''
     INSERT INTO carros(modelo, quilometragem, ano, placa, condicao, preco) VALUES(
@@ -38,7 +38,7 @@ def defaultValues():
 # A fnução mais importante deste projeto, pois ela permite
 # que o JSON adicionado no POST seja adicionado no banco de dados
 def jsonToDB(data):
-    conn = sqlite3.connect("db/carros.db")
+    conn = sqlite3.connect("carros.db")
     c = conn.cursor()
 
     # Estrutura que permite a inserção de valores do JSON na tabela
@@ -65,7 +65,7 @@ def jsonToDB(data):
             conn.commit()
 
 def getLastID():
-    conn = sqlite3.connect("db/carros.db")
+    conn = sqlite3.connect("carros.db")
     c = conn.cursor()
 
     # Variável last_id receberá o valor do último ID
